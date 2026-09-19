@@ -1,0 +1,5 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🌳 Darukaa.Earth: Running pre-push verification..."
+npm run --prefix frontend test:run || exit 1

@@ -1,0 +1,56 @@
+# Node & Frontend dependencies
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+.vite/
+frontend/.vite/
+coverage/
+frontend/coverage/
+
+# Python & Backend
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+backend/venv/
+backend/.venv/
+env/
+venv/
+ENV/
+.pytest_cache/
+backend/.pytest_cache/
+.deepeval/
+backend/.deepeval/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+*.sqlite3
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+backend/.env
+frontend/.env
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# PostGIS / Postgres Data volume
+postgres_data/

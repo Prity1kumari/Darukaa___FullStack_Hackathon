@@ -1,0 +1,12 @@
+{
+  "frontend/src/**/*.{ts,tsx,js,jsx}": [
+    "npm run --prefix frontend lint",
+    "prettier --write"
+  ],
+  "backend/**/*.py": [
+    "ruff check --fix"
+  ],
+  "*.{json,md,yml,yaml}": [
+    "prettier --write"
+  ]
+}

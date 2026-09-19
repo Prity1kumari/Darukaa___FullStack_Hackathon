@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: darukaa_postgis
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-darukaa_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-darukaa_secure_password}
+      POSTGRES_DB: ${POSTGRES_DB:-darukaa_earth}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-darukaa_user} -d ${POSTGRES_DB:-darukaa_earth}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - darukaa_net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: darukaa_backend
+    restart: unless-stopped
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-darukaa_user}:${POSTGRES_PASSWORD:-darukaa_secure_password}@postgres:5432/${POSTGRES_DB:-darukaa_earth}
+      SECRET_KEY: ${SECRET_KEY:-darukaa_earth_super_secret_jwt_key_2026_production_safe}
+      ALGORITHM: ${ALGORITHM:-HS256}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-60}
+      REFRESH_TOKEN_EXPIRE_DAYS: ${REFRESH_TOKEN_EXPIRE_DAYS:-7}
+      BACKEND_CORS_ORIGINS: ${BACKEND_CORS_ORIGINS:-http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - darukaa_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: darukaa_frontend
+    restart: unless-stopped
+    environment:
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
+      VITE_MAPBOX_ACCESS_TOKEN: ${VITE_MAPBOX_ACCESS_TOKEN:-}
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - darukaa_net
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  darukaa_net:
+    driver: bridge
