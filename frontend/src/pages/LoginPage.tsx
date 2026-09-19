@@ -24,9 +24,15 @@ export const LoginPage: React.FC = () => {
       await login(email.trim(), password);
       navigate(from, { replace: true });
     } catch (err: any) {
-      setError(
-        err?.response?.data?.detail || 'Authentication failed. Please verify credentials.'
-      );
+      if (!err?.response) {
+        setError(
+          'Unable to reach backend API. If deployed on Render free tier, the server may take ~60-90 seconds to wake up from cold sleep. Please wait a moment and try again.'
+        );
+      } else {
+        setError(
+          err?.response?.data?.detail || 'Authentication failed. Please verify credentials.'
+        );
+      }
     } finally {
       setIsLoading(false);
     }
